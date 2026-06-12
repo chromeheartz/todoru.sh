@@ -119,12 +119,14 @@ codesign --force --deep --sign - "/Applications/todoru.sh.app"
 
 ```
 todoru.sh/
-├── main.js              # Electron 메인 — 창 생성(우상단 고정)·저장 IPC
-├── preload.js           # contextBridge 로 안전하게 API 노출
+├── main.ts              # Electron 메인 — 창 생성(우상단 고정)·저장 IPC
+├── preload.ts           # contextBridge 로 안전하게 API 노출
+├── global.d.ts          # 공용 타입 (Todo · Command · window.api)
+├── tsconfig.json        # TypeScript 설정
 ├── renderer/
 │   ├── index.html       # 타이틀바 · 배너 · 리스트 · 프롬프트
 │   ├── style.css        # 다크 터미널 테마
-│   └── renderer.js      # 명령어 레지스트리 · 자동완성 · 드래그앤드롭
+│   └── renderer.ts      # 명령어 레지스트리 · 자동완성 · 드래그앤드롭
 ├── build-icon.py        # ASCII "todoru" 터미널 아이콘 생성기 (Pillow)
 └── build/icon.icns      # 생성된 앱 아이콘
 ```
