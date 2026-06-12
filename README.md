@@ -41,7 +41,7 @@
 
 > **Apple Silicon (M1/M2/M3…) Mac 전용** 빌드예요. Intel Mac은 아래 [직접 빌드](#%EF%B8%8F-개발--직접-빌드)를 참고하세요.
 
-1. **[Releases](../../releases)** 페이지에서 최신 `todoru.sh-x.x.x-arm64.dmg` 다운로드
+1. **[Releases (최신)](https://github.com/chromeheartz/todoru.sh/releases/latest)** 에서 `todoru.sh-x.x.x-arm64.dmg` 다운로드
 2. 받은 `.dmg`를 더블클릭 → **todoru.sh**를 `Applications` 폴더로 드래그
 3. 처음 실행할 때 *"개발자를 확인할 수 없습니다"* 경고가 떠요 (앱 서명을 안 했기 때문):
    - **Applications 폴더에서 todoru.sh 아이콘 우클릭 → 열기 → 열기** 를 한 번만 해주면 이후엔 그냥 클릭으로 실행돼요.
