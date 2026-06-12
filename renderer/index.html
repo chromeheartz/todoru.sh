@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>todo-terminal</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="app">
+      <header class="titlebar">
+        <div class="dots">
+          <span class="dot close" id="btn-close" title="close"></span>
+          <span class="dot min" id="btn-min" title="minimize"></span>
+          <span class="dot"></span>
+        </div>
+        <div class="title">~/todoru.sh</div>
+        <div class="count" id="count">0 tasks</div>
+      </header>
+
+      <main class="screen" id="screen">
+        <div class="banner">
+          <!-- <pre>  _____ ___  ____   ___
+ |_   _/ _ \|  _ \ / _ \
+   | || | | | | | | | | |
+   | || |_| | |_| | |_| |
+   |_| \___/|____/ \___/   terminal</pre> -->
+          <pre>
+___  __   __   __   __       
+ |  /  \ |  \ /  \ |__) /  \ 
+ |  \__/ |__/ \__/ | \  \__/ 
+
+                  <!-- .,=######@:,                    
+                ,!:~,.,--~~;*=*:                  
+               .!.,,.....,-~:;!=$,                
+               :,:!!: ....,-~:;!!*,               
+              ~~,-.~~.:;..,,~~:;!;*               
+              =,--*#,,!$-..,-~:;!!!~              
+             ,;,.~$!.,~=-..,-~:;!!*:              
+             :~.. ,~$#=~...,,~~:!!!=,             
+             :~..,,,,---...,,~~:!!!=,             
+             :~--....,,,:;-.,-~:!!!=,             
+            !;----,,, ..,-:::,-:!!!=,             
+          -=,,;::::::~.,,-~:;:-:!!!=,             
+         !-.,$#-~###*~:~-:;!;*#####@!             
+        *-:!*#@=*$@!*=!!;;!*#@@@@$= ,;            
+         $~  $#,!@@@@@@@@@@@@@@@@#@: *,           
+             ;**@@@@@*=~$@@@@@@$#=*~.*,           
+             :-#@@@@@,:*@@@@@@@!=@- -~            
+             ,!=@@@@*  $@@@@@@!~:   :.            
+              .#~$$$.  .$$$$#*..-;~$,             
+               .;            ,-=$#:               
+                .:,  ,,     ,!@#$;                
+                 .$#...  ,$#$#$!*.                
+                  !=#@==$=!!=#* ~                 
+                   =;@~--:;;*!-                   
+                   ~:!;!!**:$-=.                  
+                    ~!., -;~#*.;                  
+                    ~!.. ,::#* ;-                 
+                   .!,.  !~:$=  *.                
+                  ,~,..  !~;*@- -~                
+                  ~*: .  ;-;**:~::                
+                 !, ; .  ;.~~ ..-:                
+                 *. ; .  ;,!~    ;-               
+                 *. ~@@@@#-*~    ;-               
+                  :!!;,;;=,-$,  :-                
+                    ~~.,=@####@#,                 
+                    ~:.,;=:,.-!~                  
+                    :$!::$!!;;;$-                 
+                    !~;;=:~-:;*!                  
+                  .!$**!$=**;:;$-                 
+                  !,,.!@@~,,=@@!                  
+                  :*!!!#@*!!!$!                    -->
+            </pre>
+          <div class="hint">
+            type <span class="kw">/help</span> for commands
+          </div>
+        </div>
+        <ul class="list" id="list"></ul>
+      </main>
+
+      <div class="console" id="log"></div>
+
+      <footer class="prompt">
+        <div class="suggest" id="suggest" hidden></div>
+        <span class="caret">❯</span>
+        <input
+          id="input"
+          type="text"
+          autocomplete="off"
+          spellcheck="false"
+          placeholder="/add buy milk"
+          autofocus
+        />
+      </footer>
+    </div>
+
+    <script src="renderer.js"></script>
+  </body>
+</html>

@@ -1,0 +1,14 @@
+# dependencies
+node_modules/
+
+# build output
+dist/
+
+# generated icon intermediates (icon.icns is kept in the repo)
+build/icon.iconset/
+build/icon_1024.png
+
+# misc
+.DS_Store
+*.log
+npm-debug.log*

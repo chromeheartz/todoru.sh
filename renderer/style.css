@@ -1,0 +1,321 @@
+:root {
+  --bg: rgba(18, 18, 22, 0.92);
+  --bg-solid: #121216;
+  --border: #2a2a32;
+  --fg: #e4e4e7;
+  --fg-dim: #8b8b96;
+  --green: #4ade80;
+  --yellow: #fbbf24;
+  --red: #f87171;
+  --blue: #60a5fa;
+  --purple: #c084fc;
+  --accent: #4ade80;
+  --mono: "SF Mono", "JetBrains Mono", "Menlo", "Consolas", monospace;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  background: transparent;
+  overflow: hidden;
+  user-select: none;
+}
+
+.app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background: var(--bg);
+  backdrop-filter: blur(18px);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--fg);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
+}
+
+/* ---- titlebar ---- */
+.titlebar {
+  -webkit-app-region: drag;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 36px;
+  padding: 0 12px;
+  border-bottom: 1px solid var(--border);
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.dots {
+  -webkit-app-region: no-drag;
+  display: flex;
+  gap: 7px;
+}
+
+.dot {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: #3a3a42;
+  cursor: default;
+}
+.dot.close {
+  background: #ff5f57;
+  cursor: pointer;
+}
+.dot.min {
+  background: #febc2e;
+  cursor: pointer;
+}
+
+.title {
+  flex: 1;
+  text-align: center;
+  font-size: 12px;
+  color: var(--fg-dim);
+  letter-spacing: 0.3px;
+}
+
+.count {
+  font-size: 11px;
+  color: var(--fg-dim);
+}
+
+/* ---- screen (banner + todo list, scrolls on its own) ---- */
+.screen {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 12px;
+  user-select: text;
+}
+.screen::-webkit-scrollbar {
+  width: 8px;
+}
+.screen::-webkit-scrollbar-thumb {
+  background: #2e2e36;
+  border-radius: 4px;
+}
+
+.banner pre {
+  color: var(--green);
+  font-size: 9px;
+  line-height: 1.2;
+  opacity: 0.8;
+}
+.banner .hint {
+  margin: 6px 0 12px;
+  color: var(--fg-dim);
+  font-size: 11px;
+}
+.kw {
+  color: var(--yellow);
+}
+
+/* ---- list ---- */
+.list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.item {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 4px 6px;
+  border-radius: 6px;
+  line-height: 1.4;
+  user-select: none;
+  cursor: grab;
+}
+.item:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+.item:active {
+  cursor: grabbing;
+}
+.item.dragging {
+  opacity: 0.4;
+}
+.item.drop-before {
+  box-shadow: inset 0 2px 0 0 var(--green);
+}
+.item.drop-after {
+  box-shadow: inset 0 -2px 0 0 var(--green);
+}
+
+.grip {
+  color: #3a3a44;
+  font-size: 12px;
+  cursor: grab;
+}
+.item:hover .grip {
+  color: var(--fg-dim);
+}
+
+.item .id {
+  color: var(--fg-dim);
+  font-size: 11px;
+  min-width: 22px;
+}
+.item .box {
+  color: var(--green);
+  cursor: pointer;
+}
+.item.done .box {
+  color: var(--fg-dim);
+}
+.item .text {
+  flex: 1;
+  word-break: break-word;
+}
+.item.done .text {
+  color: var(--fg-dim);
+  text-decoration: line-through;
+}
+
+/* ---- console (command output, scrolls independently) ---- */
+.console {
+  flex: 0 0 auto;
+  /* ~8 lines: 8 × (11px × 1.5) + 7 × 2px gap + 16px padding */
+  max-height: 164px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px 12px;
+  user-select: text;
+}
+.console:empty,
+.console.closed {
+  display: none;
+}
+.console:not(:empty) {
+  border-top: 1px solid var(--border);
+  background: rgba(0, 0, 0, 0.18);
+}
+.console::-webkit-scrollbar {
+  width: 8px;
+}
+.console::-webkit-scrollbar-thumb {
+  background: #2e2e36;
+  border-radius: 4px;
+}
+.logline {
+  font-size: 11px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+/* --c-cmd / --c-answer are overridable via /text-color and /answer-color.
+   When unset, each line keeps its own default color. */
+.logline.ok {
+  color: var(--c-answer, var(--green));
+}
+.logline.err {
+  color: var(--red);
+}
+.logline.info {
+  color: var(--c-answer, var(--fg-dim));
+}
+.logline.cmd {
+  color: var(--c-cmd, var(--blue));
+}
+
+/* ---- prompt ---- */
+.prompt {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-top: 1px solid var(--border);
+  background: rgba(0, 0, 0, 0.25);
+}
+
+/* ---- command palette ---- */
+.suggest {
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  bottom: calc(100% + 6px);
+  max-height: 240px;
+  overflow-y: auto;
+  scroll-padding-bottom: 32px;
+  scroll-padding-top: 4px;
+  background: var(--bg-solid);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: 0 -10px 28px rgba(0, 0, 0, 0.5);
+  z-index: 20;
+}
+.suggest[hidden] {
+  display: none;
+}
+.suggest::-webkit-scrollbar {
+  width: 8px;
+}
+.suggest::-webkit-scrollbar-thumb {
+  background: #2e2e36;
+  border-radius: 4px;
+}
+.sg-item {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 7px 11px;
+  cursor: pointer;
+}
+.sg-item.active {
+  background: rgba(74, 222, 128, 0.14);
+}
+.sg-name {
+  color: var(--green);
+  font-weight: 600;
+}
+.sg-args {
+  color: var(--yellow);
+  font-size: 11px;
+}
+.sg-desc {
+  margin-left: auto;
+  color: var(--fg-dim);
+  font-size: 11px;
+  white-space: nowrap;
+}
+.sg-foot {
+  padding: 6px 11px;
+  border-top: 1px solid var(--border);
+  color: var(--fg-dim);
+  font-size: 10px;
+  position: sticky;
+  bottom: 0;
+  background: var(--bg-solid);
+}
+.caret {
+  color: var(--green);
+  font-weight: 700;
+}
+#input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--fg);
+  font-family: var(--mono);
+  font-size: 13px;
+  user-select: text;
+}
+#input::placeholder {
+  color: #4a4a52;
+}
