@@ -10,6 +10,13 @@
 ![platform](https://img.shields.io/badge/platform-macOS%20(Apple%20Silicon)-black)
 ![license](https://img.shields.io/badge/license-MIT-green)
 ![electron](https://img.shields.io/badge/built%20with-Electron-47848F)
+[![release](https://img.shields.io/github/v/release/chromeheartz/todoru.sh?color=4ade80)](https://github.com/chromeheartz/todoru.sh/releases/latest)
+
+<br />
+
+### [⬇️ &nbsp; Download for macOS &nbsp; (.dmg)](https://github.com/chromeheartz/todoru.sh/releases/latest)
+
+<sub>Apple Silicon · 최신 릴리즈로 이동합니다</sub>
 
 </div>
 
