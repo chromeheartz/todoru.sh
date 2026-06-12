@@ -1,18 +1,18 @@
-const { app, BrowserWindow, ipcMain, screen } = require("electron");
-const path = require("path");
-const fs = require("fs");
+import { app, BrowserWindow, ipcMain, screen } from "electron";
+import * as path from "path";
+import * as fs from "fs";
 
 const WIN_WIDTH = 380;
 const WIN_HEIGHT = 280;
 const MARGIN = 16;
 
-let win = null;
+let win: BrowserWindow | null = null;
 
-function dataFilePath() {
+function dataFilePath(): string {
   return path.join(app.getPath("userData"), "todos.json");
 }
 
-function loadTodos() {
+function loadTodos(): Todo[] {
   try {
     const raw = fs.readFileSync(dataFilePath(), "utf-8");
     const parsed = JSON.parse(raw);
@@ -22,7 +22,7 @@ function loadTodos() {
   }
 }
 
-function saveTodos(todos) {
+function saveTodos(todos: Todo[]): boolean {
   try {
     fs.writeFileSync(dataFilePath(), JSON.stringify(todos, null, 2), "utf-8");
     return true;
@@ -32,7 +32,7 @@ function saveTodos(todos) {
   }
 }
 
-function createWindow() {
+function createWindow(): void {
   const { workArea } = screen.getPrimaryDisplay();
   const x = workArea.x + workArea.width - WIN_WIDTH - MARGIN;
   const y = workArea.y + MARGIN;
@@ -73,6 +73,6 @@ app.on("window-all-closed", () => {
 
 // ---- IPC ----
 ipcMain.handle("todos:load", () => loadTodos());
-ipcMain.handle("todos:save", (_e, todos) => saveTodos(todos));
-ipcMain.on("window:close", () => win && win.close());
-ipcMain.on("window:minimize", () => win && win.minimize());
+ipcMain.handle("todos:save", (_e, todos: Todo[]) => saveTodos(todos));
+ipcMain.on("window:close", () => win?.close());
+ipcMain.on("window:minimize", () => win?.minimize());

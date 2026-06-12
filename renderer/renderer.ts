@@ -1,30 +1,33 @@
-const $list = document.getElementById("list");
-const $log = document.getElementById("log");
-const $input = document.getElementById("input");
-const $count = document.getElementById("count");
-const $suggest = document.getElementById("suggest");
+const $list = document.getElementById("list") as HTMLElement;
+const $log = document.getElementById("log") as HTMLElement;
+const $input = document.getElementById("input") as HTMLInputElement;
+const $count = document.getElementById("count") as HTMLElement;
+const $suggest = document.getElementById("suggest") as HTMLElement;
 
-let todos = [];
-const history = [];
+type LogType = "info" | "ok" | "err" | "cmd";
+type DropPlace = "before" | "after";
+
+let todos: Todo[] = [];
+const cmdHistory: string[] = [];
 let historyIdx = -1;
 
 // ---- persistence ----
-async function load() {
+async function load(): Promise<void> {
   todos = await window.api.loadTodos();
   render();
 }
-function persist() {
+function persist(): void {
   window.api.saveTodos(JSON.parse(JSON.stringify(todos)));
 }
-function nextId() {
+function nextId(): number {
   return todos.reduce((max, t) => Math.max(max, t.id), 0) + 1;
 }
 
 // ---- rendering ----
-let dragId = null;
+let dragId: number | null = null;
 let lastDragEnd = 0;
 
-function render() {
+function render(): void {
   $list.innerHTML = "";
   todos.forEach((t, i) => {
     const li = document.createElement("li");
@@ -37,7 +40,7 @@ function render() {
       <span class="box">${t.done ? "[x]" : "[ ]"}</span>
       <span class="text"></span>
     `;
-    li.querySelector(".text").textContent = t.text;
+    (li.querySelector(".text") as HTMLElement).textContent = t.text;
     attachDnD(li, t.id);
     $list.appendChild(li);
   });
@@ -46,11 +49,11 @@ function render() {
 }
 
 // ---- drag & drop reordering ----
-function attachDnD(li, id) {
+function attachDnD(li: HTMLLIElement, id: number): void {
   li.addEventListener("dragstart", (e) => {
     dragId = id;
     li.classList.add("dragging");
-    e.dataTransfer.effectAllowed = "move";
+    if (e.dataTransfer) e.dataTransfer.effectAllowed = "move";
   });
   li.addEventListener("dragend", () => {
     dragId = null;
@@ -65,7 +68,7 @@ function attachDnD(li, id) {
   });
   li.addEventListener("dragover", (e) => {
     e.preventDefault();
-    e.dataTransfer.dropEffect = "move";
+    if (e.dataTransfer) e.dataTransfer.dropEffect = "move";
     const rect = li.getBoundingClientRect();
     const after = e.clientY > rect.top + rect.height / 2;
     li.classList.toggle("drop-after", after);
@@ -82,7 +85,7 @@ function attachDnD(li, id) {
   });
 }
 
-function toggleById(id) {
+function toggleById(id: number): void {
   const idx = todos.findIndex((t) => t.id === id);
   if (idx === -1) return;
   todos[idx].done = !todos[idx].done;
@@ -90,7 +93,11 @@ function toggleById(id) {
   render();
 }
 
-function reorderTodos(srcId, targetId, place) {
+function reorderTodos(
+  srcId: number | null,
+  targetId: number,
+  place: DropPlace
+): void {
   if (srcId == null || srcId === targetId) return;
   const from = todos.findIndex((t) => t.id === srcId);
   if (from === -1) return;
@@ -103,25 +110,25 @@ function reorderTodos(srcId, targetId, place) {
   render();
 }
 
-function log(msg, type = "info") {
+function log(msg: string, type: LogType = "info"): void {
   const line = document.createElement("div");
   line.className = "logline " + type;
   line.textContent = msg;
   $log.appendChild(line);
   scrollBottom();
 }
-function scrollBottom() {
+function scrollBottom(): void {
   // the command output is its own scroll pane now
   $log.scrollTop = $log.scrollHeight;
 }
 
-// ---- console text theming (/text-color, /answer-color, /theme-init) ----
-const THEME = {
+// ---- console text theming (/input-color, /output-color, /theme-init) ----
+const THEME: Record<string, string> = {
   "--c-cmd": "todoru.cmdColor", // command echo (❯ …) color
   "--c-answer": "todoru.answerColor", // answer / result color
 };
 
-function setThemeColor(varName, value) {
+function setThemeColor(varName: string, value: string): void {
   const v = value.trim();
   if (!v) return log("usage: <color>  e.g. #4ade80 / rgb(…) / red", "err");
   if (!CSS.supports("color", v)) return log(`invalid color: ${v}`, "err");
@@ -130,7 +137,7 @@ function setThemeColor(varName, value) {
   log(`${varName === "--c-cmd" ? "text" : "answer"} color → ${v}`, "ok");
 }
 
-function resetTheme() {
+function resetTheme(): void {
   for (const [varName, key] of Object.entries(THEME)) {
     document.documentElement.style.removeProperty(varName);
     localStorage.removeItem(key);
@@ -138,7 +145,7 @@ function resetTheme() {
   log("theme reset to defaults", "ok");
 }
 
-function loadTheme() {
+function loadTheme(): void {
   for (const [varName, key] of Object.entries(THEME)) {
     const v = localStorage.getItem(key);
     if (v) document.documentElement.style.setProperty(varName, v);
@@ -146,7 +153,7 @@ function loadTheme() {
 }
 
 // ---- console show / hide (/console-open, /console-close) ----
-function setConsole(open) {
+function setConsole(open: boolean): void {
   $log.classList.toggle("closed", !open);
   localStorage.setItem("todoru.consoleClosed", open ? "0" : "1");
   if (open) {
@@ -155,21 +162,21 @@ function setConsole(open) {
   }
 }
 
-function loadConsoleState() {
+function loadConsoleState(): void {
   if (localStorage.getItem("todoru.consoleClosed") === "1")
     $log.classList.add("closed");
 }
 
 // the number shown to the user (#1, #2 …) is the 1-based position in the list,
 // so it always matches the on-screen order after drag & drop.
-function findIndex(numRaw) {
+function findIndex(numRaw: string | undefined): number {
   const n = parseInt(String(numRaw).replace("#", ""), 10);
   if (Number.isNaN(n)) return -1;
   const idx = n - 1;
   return idx >= 0 && idx < todos.length ? idx : -1;
 }
-function addTodo(text) {
-  const todo = { id: nextId(), text, done: false, createdAt: Date.now() };
+function addTodo(text: string): void {
+  const todo: Todo = { id: nextId(), text, done: false, createdAt: Date.now() };
   todos.push(todo);
   persist();
   render();
@@ -177,7 +184,7 @@ function addTodo(text) {
 }
 
 // ---- command registry (single source of truth) ----
-const COMMANDS = [
+const COMMANDS: Command[] = [
   {
     name: "/add",
     args: "<text>",
@@ -331,13 +338,13 @@ const COMMANDS = [
   },
 ];
 
-const CMD_MAP = {};
+const CMD_MAP: Record<string, Command> = {};
 for (const c of COMMANDS) {
   CMD_MAP[c.name] = c;
   (c.aliases || []).forEach((a) => (CMD_MAP[a] = c));
 }
 
-function run(raw) {
+function run(raw: string): void {
   const line = raw.trim();
   if (!line) return;
   log("❯ " + line, "cmd");
@@ -357,11 +364,16 @@ function run(raw) {
 }
 
 // ---- command autocomplete palette ----
-const sg = { items: [], index: 0, open: false };
+interface SuggestState {
+  items: Command[];
+  index: number;
+  open: boolean;
+}
+const sg: SuggestState = { items: [], index: 0, open: false };
 
-function matchCommands(prefix) {
+function matchCommands(prefix: string): Command[] {
   const p = prefix.toLowerCase();
-  const out = [];
+  const out: Command[] = [];
   for (const c of COMMANDS) {
     const names = [c.name, ...(c.aliases || [])];
     if (names.some((n) => n.startsWith(p))) out.push(c);
@@ -369,7 +381,7 @@ function matchCommands(prefix) {
   return out;
 }
 
-function updateSuggest() {
+function updateSuggest(): void {
   const v = $input.value;
   // only while typing the command token (starts with "/", no space yet)
   if (v.startsWith("/") && !v.includes(" ")) {
@@ -379,12 +391,12 @@ function updateSuggest() {
   hideSuggest();
 }
 
-function showSuggest(items) {
+function showSuggest(items: Command[]): void {
   sg.items = items;
   if (sg.index >= items.length) sg.index = 0;
   sg.open = true;
   $suggest.innerHTML = "";
-  let activeRow = null;
+  let activeRow: HTMLElement | null = null;
   items.forEach((c, i) => {
     const row = document.createElement("div");
     row.className = "sg-item" + (i === sg.index ? " active" : "");
@@ -396,9 +408,9 @@ function showSuggest(items) {
       <span class="sg-args"></span>
       <span class="sg-desc"></span>
     `;
-    row.querySelector(".sg-name").textContent = c.name;
-    row.querySelector(".sg-args").textContent = c.args || "";
-    row.querySelector(".sg-desc").textContent = c.desc + alias;
+    (row.querySelector(".sg-name") as HTMLElement).textContent = c.name;
+    (row.querySelector(".sg-args") as HTMLElement).textContent = c.args || "";
+    (row.querySelector(".sg-desc") as HTMLElement).textContent = c.desc + alias;
     row.addEventListener("mousedown", (e) => {
       e.preventDefault();
       acceptSuggest(i);
@@ -411,22 +423,22 @@ function showSuggest(items) {
   $suggest.appendChild(foot);
   $suggest.hidden = false;
   // keep the highlighted row visible when the list is tall enough to scroll
-  if (activeRow) activeRow.scrollIntoView({ block: "nearest" });
+  if (activeRow) (activeRow as HTMLElement).scrollIntoView({ block: "nearest" });
 }
 
-function hideSuggest() {
+function hideSuggest(): void {
   sg.open = false;
   sg.index = 0;
   $suggest.hidden = true;
 }
 
-function moveSuggest(delta) {
+function moveSuggest(delta: number): void {
   if (!sg.items.length) return;
   sg.index = (sg.index + delta + sg.items.length) % sg.items.length;
   showSuggest(sg.items);
 }
 
-function acceptSuggest(i = sg.index) {
+function acceptSuggest(i: number = sg.index): void {
   const c = sg.items[i];
   if (!c) return;
   // fill the command name; add a trailing space so args can follow
@@ -458,8 +470,8 @@ $input.addEventListener("keydown", (e) => {
         // no arguments -> run the highlighted command right away
         hideSuggest();
         $input.value = "";
-        history.push(c.name);
-        historyIdx = history.length;
+        cmdHistory.push(c.name);
+        historyIdx = cmdHistory.length;
         run(c.name);
       }
       return;
@@ -470,23 +482,23 @@ $input.addEventListener("keydown", (e) => {
     const val = $input.value;
     hideSuggest();
     if (val.trim()) {
-      history.push(val);
-      historyIdx = history.length;
+      cmdHistory.push(val);
+      historyIdx = cmdHistory.length;
       run(val);
     }
     $input.value = "";
   } else if (e.key === "ArrowUp") {
-    if (history.length && historyIdx > 0) {
+    if (cmdHistory.length && historyIdx > 0) {
       historyIdx--;
-      $input.value = history[historyIdx];
+      $input.value = cmdHistory[historyIdx];
       e.preventDefault();
     }
   } else if (e.key === "ArrowDown") {
-    if (historyIdx < history.length - 1) {
+    if (historyIdx < cmdHistory.length - 1) {
       historyIdx++;
-      $input.value = history[historyIdx];
+      $input.value = cmdHistory[historyIdx];
     } else {
-      historyIdx = history.length;
+      historyIdx = cmdHistory.length;
       $input.value = "";
     }
     e.preventDefault();
@@ -497,12 +509,14 @@ $input.addEventListener("keydown", (e) => {
 document.addEventListener("click", () => $input.focus());
 
 // ---- titlebar buttons ----
-document
-  .getElementById("btn-close")
-  .addEventListener("click", () => window.api.closeWindow());
-document
-  .getElementById("btn-min")
-  .addEventListener("click", () => window.api.minimizeWindow());
+(document.getElementById("btn-close") as HTMLElement).addEventListener(
+  "click",
+  () => window.api.closeWindow()
+);
+(document.getElementById("btn-min") as HTMLElement).addEventListener(
+  "click",
+  () => window.api.minimizeWindow()
+);
 
 // ---- boot ----
 loadTheme();

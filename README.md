@@ -90,7 +90,7 @@
 
 ## 🛠️ 개발 / 직접 빌드
 
-**요구사항:** [Node.js](https://nodejs.org) 18+ · macOS
+**요구사항:** [Node.js](https://nodejs.org) 18+ · macOS · TypeScript (devDependency 로 포함)
 (아이콘을 다시 만들 때만 Python 3 + [Pillow](https://pypi.org/project/Pillow/) 필요)
 
 ```bash
@@ -98,10 +98,14 @@ git clone https://github.com/chromeheartz/todoru.sh.git
 cd todoru.sh
 npm install
 
-npm start        # 개발 모드로 바로 실행
-npm run dist     # .app + .dmg 빌드  → dist/
+npm start        # tsc 컴파일 후 개발 모드 실행
+npm run build    # 타입 체크 + .ts → .js 컴파일만
+npm run watch    # 파일 변경 감지하며 자동 컴파일
+npm run dist     # 컴파일 + .app/.dmg 빌드 → dist/
 npm run icon     # 아이콘(.icns) 재생성 → build/
 ```
+
+> TypeScript로 작성돼 있어요. `.ts` 가 소스이고, `tsc` 가 같은 위치에 `.js` 를 만들어 Electron이 실행합니다. (생성된 `.js` 는 `.gitignore` 처리)
 
 빌드한 앱을 설치하려면:
 

@@ -4,6 +4,12 @@ node_modules/
 # build output
 dist/
 
+# compiled TypeScript output (sources are the .ts files)
+main.js
+preload.js
+renderer/renderer.js
+*.tsbuildinfo
+
 # generated icon intermediates (icon.icns is kept in the repo)
 build/icon.iconset/
 build/icon_1024.png

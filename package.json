@@ -4,16 +4,24 @@
   "description": "todoru.sh — a cmux-style terminal TODO that floats in the top-right corner",
   "main": "main.js",
   "scripts": {
-    "start": "electron .",
+    "build": "tsc",
+    "start": "tsc && electron .",
+    "watch": "tsc --watch",
     "icon": "python3 build-icon.py && rm -rf build/icon.iconset && mkdir -p build/icon.iconset && for s in 16 32 128 256 512; do sips -z $s $s build/icon_1024.png --out build/icon.iconset/icon_${s}x${s}.png; sips -z $((s*2)) $((s*2)) build/icon_1024.png --out build/icon.iconset/icon_${s}x${s}@2x.png; done && iconutil -c icns build/icon.iconset -o build/icon.icns",
-    "dist": "electron-builder --mac"
+    "dist": "tsc && electron-builder --mac"
   },
   "author": "utaro",
   "license": "MIT",
   "build": {
     "appId": "com.utaro.todoru",
     "productName": "todoru.sh",
-    "files": ["main.js", "preload.js", "renderer/**/*"],
+    "files": [
+      "main.js",
+      "preload.js",
+      "renderer/index.html",
+      "renderer/style.css",
+      "renderer/renderer.js"
+    ],
     "directories": {
       "output": "dist"
     },
@@ -25,7 +33,9 @@
     }
   },
   "devDependencies": {
+    "@types/node": "^20.0.0",
     "electron": "^33.0.0",
-    "electron-builder": "^25.1.8"
+    "electron-builder": "^25.1.8",
+    "typescript": "^5.6.0"
   }
 }
