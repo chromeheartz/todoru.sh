@@ -1,5 +1,4 @@
 <div align="center">
-
 <img src="docs/icon.png" width="128" alt="todoru.sh icon" />
 
 # todoru.sh
