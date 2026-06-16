@@ -76,6 +76,8 @@
 | `/clear` | 콘솔 화면만 비움 (할 일은 유지) | `/cls` |
 | `/console-open` | 명령 출력 콘솔 열기 | |
 | `/console-close` | 명령 출력 콘솔 닫기 | |
+| `/pin-on` | 모든 데스크톱(Space)에 표시 — 화면을 바꿔도 따라옴 | |
+| `/pin-off` | 지금 데스크톱에만 표시 (기본값) | |
 | `/input-color <색>` | 내가 친 명령어 텍스트 색 | `/text-color` |
 | `/output-color <색>` | 결과 / 답변 텍스트 색 | `/answer-color` |
 | `/theme-init` | 콘솔 텍스트 색을 기본값으로 초기화 | `/theme-reset` |
