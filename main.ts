@@ -55,7 +55,9 @@ function createWindow(): void {
     },
   });
 
-  win.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
+  // Whether the window follows you across every desktop (Space) is controlled
+  // by the renderer via the "window:setPin" IPC (persisted in localStorage).
+  // Default: stay on the desktop it was opened on.
   win.loadFile(path.join(__dirname, "renderer", "index.html"));
 }
 
@@ -76,3 +78,7 @@ ipcMain.handle("todos:load", () => loadTodos());
 ipcMain.handle("todos:save", (_e, todos: Todo[]) => saveTodos(todos));
 ipcMain.on("window:close", () => win?.close());
 ipcMain.on("window:minimize", () => win?.minimize());
+// pin = show on (and follow across) every desktop / over full-screen apps.
+ipcMain.on("window:setPin", (_e, enabled: boolean) => {
+  win?.setVisibleOnAllWorkspaces(enabled, { visibleOnFullScreen: enabled });
+});

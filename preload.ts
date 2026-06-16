@@ -5,6 +5,7 @@ const api: TodoApi = {
   saveTodos: (todos) => ipcRenderer.invoke("todos:save", todos),
   closeWindow: () => ipcRenderer.send("window:close"),
   minimizeWindow: () => ipcRenderer.send("window:minimize"),
+  setPin: (enabled) => ipcRenderer.send("window:setPin", enabled),
 };
 
 contextBridge.exposeInMainWorld("api", api);

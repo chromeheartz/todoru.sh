@@ -24,6 +24,8 @@ declare global {
     saveTodos(todos: Todo[]): Promise<boolean>;
     closeWindow(): void;
     minimizeWindow(): void;
+    /** Show on (and follow across) every desktop / over full-screen apps. */
+    setPin(enabled: boolean): void;
   }
 
   interface Window {

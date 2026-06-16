@@ -167,6 +167,26 @@ function loadConsoleState(): void {
     $log.classList.add("closed");
 }
 
+// ---- pin to all desktops (/pin) ----
+// When on, the window shows on every desktop (Space) and follows you when you
+// switch — like the screenshot preview thumbnail. When off, it stays on the
+// desktop it was opened on. Default: off.
+function applyPin(enabled: boolean, announce: boolean): void {
+  window.api.setPin(enabled);
+  localStorage.setItem("todoru.pinAllDesktops", enabled ? "1" : "0");
+  if (announce)
+    log(
+      enabled
+        ? "pin on · 모든 데스크톱에 표시 (화면 전환 시 따라다님)"
+        : "pin off · 이 데스크톱에만 표시",
+      "ok"
+    );
+}
+
+function loadPinState(): void {
+  applyPin(localStorage.getItem("todoru.pinAllDesktops") === "1", false);
+}
+
 // the number shown to the user (#1, #2 …) is the 1-based position in the list,
 // so it always matches the on-screen order after drag & drop.
 function findIndex(numRaw: string | undefined): number {
@@ -278,6 +298,22 @@ const COMMANDS: Command[] = [
     desc: "콘솔(명령 출력) 닫기",
     run() {
       setConsole(false);
+    },
+  },
+  {
+    name: "/pin-on",
+    args: "",
+    desc: "모든 데스크톱에 따라다니기 켜기",
+    run() {
+      applyPin(true, true);
+    },
+  },
+  {
+    name: "/pin-off",
+    args: "",
+    desc: "이 데스크톱에만 표시 (따라다니기 끄기)",
+    run() {
+      applyPin(false, true);
     },
   },
   {
@@ -521,5 +557,6 @@ document.addEventListener("click", () => $input.focus());
 // ---- boot ----
 loadTheme();
 loadConsoleState();
+loadPinState();
 load();
 $input.focus();
